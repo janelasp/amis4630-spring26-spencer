@@ -1,0 +1,7 @@
+@HelloWorldApi_HostAddress = http://localhost:5293
+
+GET {{HelloWorldApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+### Get Hello Message
+GET http://localhost:5000/api/hello
