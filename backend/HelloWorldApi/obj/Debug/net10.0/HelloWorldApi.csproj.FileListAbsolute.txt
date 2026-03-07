@@ -34,3 +34,4 @@
 /Users/janelaspencer/development/amis/workshop-4-lab/backend/HelloWorldApi/bin/Debug/net10.0/Swashbuckle.AspNetCore.Swagger.dll
 /Users/janelaspencer/development/amis/workshop-4-lab/backend/HelloWorldApi/bin/Debug/net10.0/Swashbuckle.AspNetCore.SwaggerGen.dll
 /Users/janelaspencer/development/amis/workshop-4-lab/backend/HelloWorldApi/bin/Debug/net10.0/Swashbuckle.AspNetCore.SwaggerUI.dll
+/Users/janelaspencer/development/amis/workshop-4-lab/backend/HelloWorldApi/obj/Debug/net10.0/HelloWorldApi.sourcelink.json

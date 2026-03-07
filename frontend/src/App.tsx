@@ -1,38 +1,46 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { ProductList } from './components/ProductList';
+import { ProductDetail } from './components/ProductDetail';
 import './App.css';
 
 function App() {
-  const [message, setMessage] = useState<string>('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>('');
+  //Track which view to show: list or detail
+  const [view, setView] = useState<'list' | 'detail'>('list');
+  
+  //Store the ID of the product the user clicked on
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  
+  //Function to switch to detail view
+  const handleProductClick = (id: number) => {
+    setSelectedId(id);
+    setView('detail');
+  };
 
-  useEffect(() => {
-    // Call .NET API when component loads
-    fetch('http://localhost:5000/api/hello')
-      .then(response => response.json())
-      .then(data => {
-        setMessage(data.message);
-        setLoading(false);
-      })
-      .catch(err => {
-        setError('Failed to connect to .NET API');
-        setLoading(false);
-        console.error(err);
-      });
-  }, []);
-
-  if (loading) return <div className="app">Loading...</div>;
-  if (error) return <div className="app error">{error}</div>;
+  //Function to switch back to list view
+  const handleBackToList = () => {
+    setSelectedId(null);
+    setView('list');
+  };
 
   return (
     <div className="app">
-      <h1>🚀 Full-Stack Hello World</h1>
-      <div className="card">
-        <h2>Message from .NET:</h2>
-        <p className="message">{message}</p>
-      </div>
-    </div>
-  );
-}
+      <header>
+        <h1>Buckeye Marketplace</h1>
+      </header>
 
-export default App;
+      <main>
+        {view === 'list' ? (
+          /* Show the List Page */
+          <ProductList onProductClick={handleProductClick} />
+        ) : (
+          /* Show the Detail Page for the selected product */
+          <ProductDetail productId={selectedId!} onBack={handleBackToList} />
+        )}
+      </main>
+    </div>  
+        );
+      }
+
+      export default App;
+       
+      

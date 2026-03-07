@@ -50,6 +50,7 @@ Component hiearchies for the different application features:
 
 > **AI Usage:** AI was used to help with construction of component hierarchy and diagram as well as refine architecture in relation to pain points from user stories.
 
-
+## Product Catalog Development
+I asked AI on how I should go about making the product catalog and where exactly should I start. It suggested starting from the backend and then focusing on the frontend. I also asked about different terminologies that I wasn't familiar with such as using 'm' for decimal numbers. I ignored the AI suggestions for the types of products I wanted to display on the application. There would also be instances where it told me to import certain stuff such as BrowserRouter but I chose not to because I didn't see that in any of the materials we learned and observed in lecture. I also asked it to explain certain stuff such as onViewDetails, onBack and IEnumerable.
 
 
