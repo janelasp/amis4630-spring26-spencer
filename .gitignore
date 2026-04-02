@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Node/Frontend
+node_modules/
+frontend/dist/
+frontend/dist-ssr/
+
+# .NET build artifacts
+backend/**/bin/
+backend/**/obj/
+
+# Logs
+*.log
