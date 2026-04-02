@@ -9,6 +9,7 @@ interface ProductListProps {
 export function ProductList({ onProductClick }: ProductListProps) {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     
     useEffect(() => {
         fetch('http://localhost:5000/api/products')
@@ -17,10 +18,14 @@ export function ProductList({ onProductClick }: ProductListProps) {
                 setProducts(data);
                 setLoading(false);
             })
-        
+            .catch(() => {
+                setError('Failed to load products. Please try again.');
+                setLoading(false);
+            });
     }, []);
 
     if (loading) return <div>Loading products...</div>;
+    if (error) return <div>{error}</div>;
     if (products.length === 0) return <div>No products found.</div>;
 
     return (

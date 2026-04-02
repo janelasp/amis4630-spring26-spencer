@@ -1,4 +1,5 @@
 import type { Product } from '../types/product';
+import { AddToCartButton } from './AddToCartButton/AddToCartButton';
 
 interface ProductCardProps {
   product: Product;
@@ -14,6 +15,14 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
             <p>Category: {product.category}</p>
             <p>Seller: {product.sellerName}</p>
             <button onClick={() => onViewDetails?.(product.id)}>View Details</button>
+            <AddToCartButton
+                product={{
+                    id: product.id,
+                    name: product.title,
+                    price: product.price,
+                    imageUrl: product.imageUrl,
+                }}
+            />
         </div>
     );
 }

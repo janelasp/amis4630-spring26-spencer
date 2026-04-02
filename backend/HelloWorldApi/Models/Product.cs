@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace HelloWorldApi.Models;
 
 /// <summary>
@@ -6,10 +9,14 @@ namespace HelloWorldApi.Models;
 public class Product
 {
     public int Id { get; set; }
+    
+    [Required, MaxLength(200)]
     public required string Title { get; set; }
 
+    [MaxLength(2000)]
     public required string Description { get; set; }
     
+    [Column(TypeName = "decimal(12,2)")]
     public required decimal Price { get; set; }
 
     public required string Category { get; set; }

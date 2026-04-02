@@ -1,0 +1,164 @@
+.cartPage {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+}
+
+.heading {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+}
+
+.emptyState {
+  text-align: center;
+}
+
+.emptyText {
+  margin-bottom: 1rem;
+}
+
+.browseButton {
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  border: none;
+  background-color: #ba0c2f;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.browseButton:hover {
+  background-color: #990a26;
+}
+
+.cartList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cartItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.itemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.itemName {
+  font-weight: 600;
+}
+
+.itemPrice {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.itemControls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.quantityControls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.qtyButton {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.qtyButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.qtyValue {
+  min-width: 1.5rem;
+  text-align: center;
+}
+
+.lineTotal {
+  font-weight: 600;
+}
+
+.removeButton {
+  border: none;
+  background: transparent;
+  color: #dc2626;
+  cursor: pointer;
+}
+
+.summary {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.totalRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.totalLabel {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.totalValue {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.clearButton {
+  margin-top: 0.25rem;
+  align-self: flex-start;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.clearButton:hover {
+  color: #dc2626;
+}
+
+.checkoutButton {
+  padding: 0.9rem 1.8rem;
+  border-radius: 999px;
+  border: none;
+  background-color: #ba0c2f;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.checkoutButton:hover {
+  background-color: #990a26;
+}
