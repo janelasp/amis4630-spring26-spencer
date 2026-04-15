@@ -34,9 +34,19 @@ public class CartController : ControllerBase
             .ThenInclude(i => i.Product)
             .SingleOrDefaultAsync(c => c.UserId == currentUserId);
 
+        // Treat "no cart yet" as an empty cart (avoids noisy 404s for first-time users).
         if (cart == null)
         {
-            return NotFound();
+            cart = new Cart
+            {
+                UserId = currentUserId,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                Items = new List<CartItem>()
+            };
+
+            _context.Carts.Add(cart);
+            await _context.SaveChangesAsync();
         }
 
         var response = MapCartToResponse(cart);

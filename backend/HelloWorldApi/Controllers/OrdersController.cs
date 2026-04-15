@@ -168,10 +168,10 @@ public class OrdersController : ControllerBase
 
         _db.Orders.Add(order);
 
-    // Clear cart after ordering
+        // Clear cart after ordering
         _db.CartItems.RemoveRange(cart.Items);
         cart.Items.Clear();
-    cart.UpdatedAt = nowUtc;
+        cart.UpdatedAt = nowUtc;
 
         await _db.SaveChangesAsync();
 
