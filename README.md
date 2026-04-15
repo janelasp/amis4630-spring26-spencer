@@ -56,3 +56,21 @@ I asked AI on how I should go about making the product catalog and where exactly
 ## Shopping Cart Development
 I used AI to check if I met the requirements for the Milestone's deliverables. I also asked it to explain the concepts of payload and useReducer so I could better understand it. AI was also used to assist with fixing issues such as the product catalog not displaying on the application and integrating the frontend and backend.
 
+## Authentication Backend (M5)
+
+### JWT key (user secrets)
+The JWT signing key is intentionally **not** stored in `appsettings.json`. Set it via user secrets:
+
+```bash
+dotnet user-secrets set Jwt:Key "your-long-random-key" --project backend/HelloWorldApi
+```
+
+### Seeded admin user (for testing)
+- Email: `admin@buckeye.local`
+- Password: `Admin1234`
+
+### Endpoints
+- `POST /api/auth/register` → creates a user and returns `{ accessToken, refreshToken, expiresAtUtc }`
+- `POST /api/auth/login` → returns `{ accessToken, refreshToken, expiresAtUtc }`
+- `POST /api/auth/refresh` → rotates refresh token and returns new tokens (bonus)
+

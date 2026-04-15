@@ -1,7 +1,43 @@
 @HelloWorldApi_HostAddress = http://localhost:5293
+@accessToken = REPLACE_ME
+@bearer = Bearer {{accessToken}}
 
 GET {{HelloWorldApi_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ### Get Hello Message
 GET http://localhost:5000/api/hello
+
+### Register
+POST {{HelloWorldApi_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+	"email": "user1@example.com",
+	"password": "Password1"
+}
+
+### Login
+POST {{HelloWorldApi_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+	"email": "admin@buckeye.local",
+	"password": "Admin1234"
+}
+
+### Get Cart (requires auth)
+GET {{HelloWorldApi_HostAddress}}/api/cart
+Authorization: {{bearer}}
+
+### Create Order From Cart (requires auth)
+POST {{HelloWorldApi_HostAddress}}/api/orders
+Authorization: {{bearer}}
+
+### List My Orders (requires auth)
+GET {{HelloWorldApi_HostAddress}}/api/orders
+Authorization: {{bearer}}
+
+### Admin: List Users (requires Admin role)
+GET {{HelloWorldApi_HostAddress}}/api/admin/users
+Authorization: {{bearer}}

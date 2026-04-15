@@ -1,84 +1,61 @@
-import type {AddToCartRequest, CartApiResponse, CartItem, CartApiItem, UpdateCartItemRequest} from '../types/cart';
-
-const CART_BASE_URL = 'http://localhost:5000/api/cart';
-
-async function parseJsonOrThrow<T>(response: Response): Promise<T> {
-	if (!response.ok) {
-		throw new Error(`Cart API error: ${response.status} ${response.statusText}`);
-	}
-
-	return (await response.json()) as T;
-}
+import type {
+  AddToCartRequest,
+  CartApiResponse,
+  CartItem,
+  CartApiItem,
+  UpdateCartItemRequest,
+} from '../types/cart';
+import { ApiError, apiDelete, apiRequest } from './apiClient';
 
 export async function getCart(): Promise<CartApiResponse | null> {
-	const response = await fetch(CART_BASE_URL);
-
-	if (response.status === 404) {
-		return null;
-	}
-
-	return await parseJsonOrThrow<CartApiResponse>(response);
+  try {
+    const response = await apiRequest('/cart', { method: 'GET' });
+    return (await response.json()) as CartApiResponse;
+  } catch (error) {
+    if (error instanceof ApiError && (error.status === 404 || error.status === 401)) {
+      return null;
+    }
+    throw error;
+  }
 }
 
 export async function addCartItem(request: AddToCartRequest): Promise<void> {
-	const response = await fetch(CART_BASE_URL, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify(request),
-	});
-
-	if (!response.ok) {
-		throw new Error(`Failed to add to cart: ${response.status}`);
-	}
+  await apiRequest('/cart', {
+    method: 'POST',
+    body: JSON.stringify(request),
+  });
 }
 
 export async function updateCartItem(
-	cartItemId: number,
-	request: UpdateCartItemRequest,
+  cartItemId: number,
+  request: UpdateCartItemRequest,
 ): Promise<void> {
-	const response = await fetch(`${CART_BASE_URL}/${cartItemId}`, {
-		method: 'PUT',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify(request),
-	});
-
-	if (!response.ok) {
-		throw new Error(`Failed to update cart item: ${response.status}`);
-	}
+  await apiRequest(`/cart/${cartItemId}`, {
+    method: 'PUT',
+    body: JSON.stringify(request),
+  });
 }
 
 export async function deleteCartItem(cartItemId: number): Promise<void> {
-	const response = await fetch(`${CART_BASE_URL}/${cartItemId}`, {
-		method: 'DELETE',
-	});
-
-	if (response.status === 404) {
-		// Treat missing item as already-deleted
-		return;
-	}
-
-	if (!response.ok) {
-		throw new Error(`Failed to delete cart item: ${response.status}`);
-	}
+  try {
+    await apiDelete(`/cart/${cartItemId}`);
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      return;
+    }
+    throw error;
+  }
 }
 
 export async function clearCart(): Promise<void> {
-	const response = await fetch(`${CART_BASE_URL}/clear`, {
-		method: 'DELETE',
-	});
-
-	if (response.status === 404) {
-		// No cart yet; treat as cleared
-		return;
-	}
-
-	if (!response.ok) {
-		throw new Error(`Failed to clear cart: ${response.status}`);
-	}
+  try {
+    await apiDelete('/cart/clear');
+  } catch (error) {
+    if (error instanceof ApiError && (error.status === 404 || error.status === 401)) {
+      return;
+    }
+    throw error;
+  }
 }
 
 export function mapApiCartToItems(apiCart: CartApiResponse | null): CartItem[] {

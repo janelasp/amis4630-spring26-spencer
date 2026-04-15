@@ -8,3 +8,14 @@ export interface Product {
   postedDate: string;
   imageUrl: string;
 }
+
+export interface CreateProductRequest {
+  title: string;
+  description: string;
+  price: number;
+  category: string;
+  sellerName: string;
+  imageUrl: string;
+}
+
+export interface UpdateProductRequest extends CreateProductRequest {}

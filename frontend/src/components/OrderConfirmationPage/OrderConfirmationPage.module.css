@@ -1,0 +1,133 @@
+.page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+}
+
+.heading {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.subheading {
+  margin-top: 0.5rem;
+  color: #374151;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+}
+
+.card {
+  margin-top: 1.25rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem;
+  background: #fafafa;
+}
+
+.cardHeading {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.1rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 0.75rem;
+  padding: 0.4rem 0;
+}
+
+.label {
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.value {
+  color: #111827;
+}
+
+.items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.itemRow {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 0.75rem;
+}
+
+.itemName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemQty {
+  color: #6b7280;
+}
+
+.itemTotal {
+  font-weight: 600;
+}
+
+.actions {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.linkButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 1.2rem;
+  border-radius: 999px;
+  border: none;
+  background-color: #ba0c2f;
+  color: #ffffff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.linkButton:hover {
+  background-color: #990a26;
+}
+
+.secondaryLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 1.2rem;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: transparent;
+  color: #111827;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.secondaryLink:hover {
+  background: #f3f4f6;
+}
+
+.error {
+  margin-top: 0.75rem;
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+@media (max-width: 720px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+}

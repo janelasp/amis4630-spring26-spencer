@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import { useEffect, useState } from 'react';
 import type { Product } from '../types/product';
 import { ProductCard } from './ProductCard';
 

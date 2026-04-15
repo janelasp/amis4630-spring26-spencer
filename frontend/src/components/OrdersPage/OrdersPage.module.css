@@ -1,0 +1,90 @@
+.page {
+  max-width: 860px;
+  margin: 24px auto;
+  padding: 0 16px;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.heading {
+  margin: 0;
+}
+
+.placeOrderButton {
+  border: none;
+  border-radius: 10px;
+  background: #0b5fff;
+  color: white;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.placeOrderButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.error {
+  margin-top: 12px;
+  color: #b00020;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+  display: grid;
+  gap: 12px;
+}
+
+.card {
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 12px;
+  background: white;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 800;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  color: #555;
+  margin-top: 6px;
+}
+
+.items {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+  display: grid;
+  gap: 6px;
+}
+
+.itemRow {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 10px;
+}
+
+.itemName {
+  font-weight: 600;
+}
+
+.itemQty {
+  color: #555;
+}
+
+.itemTotal {
+  font-variant-numeric: tabular-nums;
+}

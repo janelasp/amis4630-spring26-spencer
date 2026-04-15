@@ -7,9 +7,12 @@ export interface CartItem {
 	imageUrl?: string;
 }
 
+export type CartView = 'cart' | 'checkout';
+
 export interface CartState {
 	items: CartItem[];
 	isOpen: boolean;
+	cartView: CartView;
 }
 
 export type CartAction =
@@ -40,6 +43,12 @@ export type CartAction =
 		}
 	| {
 			type: 'TOGGLE_CART';
+		}
+	| {
+			type: 'SET_CART_VIEW';
+			payload: {
+				cartView: CartView;
+			};
 		}
 	| {
 			type: 'SET_CART_FROM_SERVER';

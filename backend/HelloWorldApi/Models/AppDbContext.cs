@@ -1,8 +1,9 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace HelloWorldApi.Models;
 
-public class AppDbContext : DbContext
+public class AppDbContext : IdentityDbContext<ApplicationUser>
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -11,10 +12,31 @@ public class AppDbContext : DbContext
     public DbSet<Product> Products { get; set; } = null!;
     public DbSet<Cart> Carts { get; set; } = null!;
     public DbSet<CartItem> CartItems { get; set; } = null!;
+    public DbSet<Order> Orders { get; set; } = null!;
+    public DbSet<OrderItem> OrderItems { get; set; } = null!;
+    public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<RefreshToken>()
+            .HasOne(rt => rt.User)
+            .WithMany(u => u.RefreshTokens)
+            .HasForeignKey(rt => rt.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Order>()
+            .HasMany(o => o.Items)
+            .WithOne(oi => oi.Order)
+            .HasForeignKey(oi => oi.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<OrderItem>()
+            .HasOne(oi => oi.Product)
+            .WithMany()
+            .HasForeignKey(oi => oi.ProductId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         // Configure relationships
         modelBuilder.Entity<Cart>()
@@ -39,7 +61,7 @@ public class AppDbContext : DbContext
                 Price = 19.99m,
                 Category = "Textbooks",
                 sellerName = "Audrey Smith",
-                postedDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                postedDate = new DateOnly(2026, 4, 12),
                 ImageUrl = "https://example.com/images/organic-chemistry-textbook.jpg"
             },
             new Product
@@ -50,7 +72,7 @@ public class AppDbContext : DbContext
                 Price = 14.99m,
                 Category = "Clothing",
                 sellerName = "Brian Johnson",
-                postedDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                postedDate = new DateOnly(2026, 4, 12),
                 ImageUrl = "https://example.com/images/osu-game-day-jersey.jpg"
             },
             new Product
@@ -61,7 +83,7 @@ public class AppDbContext : DbContext
                 Price = 9.99m,
                 Category = "Stationery",
                 sellerName = "Catherine Lee",
-                postedDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                postedDate = new DateOnly(2026, 4, 12),
                 ImageUrl = "https://example.com/images/mechanical-pencil-set.jpg"
             },
             new Product
@@ -72,7 +94,7 @@ public class AppDbContext : DbContext
                 Price = 29.99m,
                 Category = "Dorm Decor",
                 sellerName = "Alyssa Powell",
-                postedDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                postedDate = new DateOnly(2026, 4, 12),
                 ImageUrl = "https://example.com/images/desktop-lamp.jpg"
             },
             new Product
@@ -83,7 +105,7 @@ public class AppDbContext : DbContext
                 Price = 39.99m,
                 Category = "Dorm Decor",
                 sellerName = "David Martinez",
-                postedDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                postedDate = new DateOnly(2026, 4, 12),
                 ImageUrl = "https://example.com/images/led-light-strip.jpg"
             },
             new Product
@@ -94,7 +116,7 @@ public class AppDbContext : DbContext
                 Price = 12.99m,
                 Category = "Stationery",
                 sellerName = "Emily Davis",
-                postedDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                postedDate = new DateOnly(2026, 4, 12),
                 ImageUrl = "https://example.com/images/highlighter-set.jpg"
             },
             new Product
@@ -105,7 +127,7 @@ public class AppDbContext : DbContext
                 Price = 34.99m,
                 Category = "Clothing",
                 sellerName = "Michael Brown",
-                postedDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                postedDate = new DateOnly(2026, 4, 12),
                 ImageUrl = "https://example.com/images/osu-hoodie.jpg"
             },
             new Product
@@ -116,7 +138,7 @@ public class AppDbContext : DbContext
                 Price = 35.00m,
                 Category = "Textbooks",
                 sellerName = "Sarah Wilson",
-                postedDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                postedDate = new DateOnly(2026, 4, 12),
                 ImageUrl = "https://example.com/images/calculus-ii-textbook.jpg"
             }
         );

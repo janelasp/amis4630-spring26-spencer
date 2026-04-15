@@ -1,16 +1,17 @@
 using HelloWorldApi.Dtos;
 using HelloWorldApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace HelloWorldApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "User,Admin")]
 public class CartController : ControllerBase
 {
-    private const string CurrentUserId = "default-user";  // placeholder until auth is implemented
-
     private readonly AppDbContext _context;
 
     public CartController(AppDbContext context)
@@ -22,10 +23,16 @@ public class CartController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<CartResponse>> GetCart()
     {
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(currentUserId))
+        {
+            return Unauthorized();
+        }
+
         var cart = await _context.Carts
             .Include(c => c.Items)
             .ThenInclude(i => i.Product)
-            .SingleOrDefaultAsync(c => c.UserId == CurrentUserId);
+            .SingleOrDefaultAsync(c => c.UserId == currentUserId);
 
         if (cart == null)
         {
@@ -40,6 +47,12 @@ public class CartController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<CartItemResponse>> AddToCart([FromBody] AddToCartRequest request)
     {
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(currentUserId))
+        {
+            return Unauthorized();
+        }
+
         var product = await _context.Products.FindAsync(request.ProductId);
         if (product == null)
         {
@@ -49,13 +62,13 @@ public class CartController : ControllerBase
         var cart = await _context.Carts
             .Include(c => c.Items)
             .ThenInclude(i => i.Product)
-            .SingleOrDefaultAsync(c => c.UserId == CurrentUserId);
+            .SingleOrDefaultAsync(c => c.UserId == currentUserId);
 
         if (cart == null)
         {
             cart = new Cart
             {
-                UserId = CurrentUserId,
+                UserId = currentUserId,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 Items = new List<CartItem>()
@@ -97,6 +110,12 @@ public class CartController : ControllerBase
     [HttpPut("{cartItemId}")]
     public async Task<ActionResult<CartItemResponse>> UpdateCartItem(int cartItemId, [FromBody] UpdateCartItemRequest request)
     {
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(currentUserId))
+        {
+            return Unauthorized();
+        }
+
         var cartItem = await _context.CartItems
             .Include(i => i.Cart)
             .Include(i => i.Product)
@@ -107,7 +126,7 @@ public class CartController : ControllerBase
             return NotFound();
         }
 
-        if (cartItem.Cart == null || cartItem.Cart.UserId != CurrentUserId)
+        if (cartItem.Cart == null || cartItem.Cart.UserId != currentUserId)
         {
             return Forbid();
         }
@@ -125,6 +144,12 @@ public class CartController : ControllerBase
     [HttpDelete("{cartItemId}")]
     public async Task<IActionResult> DeleteCartItem(int cartItemId)
     {
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(currentUserId))
+        {
+            return Unauthorized();
+        }
+
         var cartItem = await _context.CartItems
             .Include(i => i.Cart)
             .SingleOrDefaultAsync(i => i.Id == cartItemId);
@@ -134,7 +159,7 @@ public class CartController : ControllerBase
             return NotFound();
         }
 
-        if (cartItem.Cart == null || cartItem.Cart.UserId != CurrentUserId)
+        if (cartItem.Cart == null || cartItem.Cart.UserId != currentUserId)
         {
             return Forbid();
         }
@@ -150,9 +175,15 @@ public class CartController : ControllerBase
     [HttpDelete("clear")]
     public async Task<IActionResult> ClearCart()
     {
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(currentUserId))
+        {
+            return Unauthorized();
+        }
+
         var cart = await _context.Carts
             .Include(c => c.Items)
-            .SingleOrDefaultAsync(c => c.UserId == CurrentUserId);
+            .SingleOrDefaultAsync(c => c.UserId == currentUserId);
 
         if (cart == null)
         {

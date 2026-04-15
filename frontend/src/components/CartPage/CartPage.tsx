@@ -4,9 +4,10 @@ import styles from './CartPage.module.css';
 
 interface CartPageProps {
   onBrowseProducts?: () => void;
+  onProceedToCheckout?: () => void;
 }
 
-export function CartPage({ onBrowseProducts }: CartPageProps) {
+export function CartPage({ onBrowseProducts, onProceedToCheckout }: CartPageProps) {
   const { state, dispatch, cartTotal, isLoading, error } = useCartContext();
   const { items } = state;
 
@@ -48,11 +49,7 @@ export function CartPage({ onBrowseProducts }: CartPageProps) {
   };
 
   const handleProceedToCheckout = () => {
-    const checkoutElement = document.getElementById('checkout');
-
-    if (checkoutElement) {
-      checkoutElement.scrollIntoView({ behavior: 'smooth' });
-    }
+    onProceedToCheckout?.();
   };
 
   const handleBrowseProductsClick = (event: MouseEvent<HTMLButtonElement>) => {

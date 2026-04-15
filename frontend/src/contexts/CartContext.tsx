@@ -1,7 +1,28 @@
-import {createContext, useContext, useReducer, type ReactNode, useEffect, useState} from 'react';
+import {
+  createContext,
+  useContext,
+  useReducer,
+  type ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { cartReducer, initialCartState } from '../reducers/cartReducer';
 import type { CartState, CartAction } from '../types/cart';
-import {addCartItem, clearCart, deleteCartItem, getCart, mapApiCartToItems, updateCartItem} from '../services/cartService';
+import {
+  addCartItem,
+  clearCart,
+  deleteCartItem,
+  getCart,
+  mapApiCartToItems,
+  updateCartItem,
+} from '../services/cartService';
+import { useAuthContext } from './AuthContext';
+import {
+  clearGuestCartItems,
+  loadGuestCartItems,
+  saveGuestCartItems,
+} from '../services/guestCartStorage';
 
 interface CartContextValue {
   state: CartState;
@@ -19,10 +40,12 @@ interface CartProviderProps {
 }
 
 export function CartProvider({ children }: CartProviderProps) {
+  const { isAuthenticated } = useAuthContext();
   const [state, baseDispatch] = useReducer(cartReducer, initialCartState);
   const [lastAction, setLastAction] = useState<CartAction | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const prevIsAuthenticated = useRef(isAuthenticated);
 
   const dispatch = (action: CartAction) => {
     baseDispatch(action);
@@ -36,6 +59,7 @@ export function CartProvider({ children }: CartProviderProps) {
         break;
       }
       case 'TOGGLE_CART':
+      case 'SET_CART_VIEW':
       case 'SET_CART_FROM_SERVER': {
         // local-only or server-driven updates; no API call
         break;
@@ -58,6 +82,30 @@ export function CartProvider({ children }: CartProviderProps) {
         setIsLoading(true);
         setError(null);
 
+        if (!isAuthenticated) {
+          const items = loadGuestCartItems();
+          if (!isMounted) {
+            return;
+          }
+
+          baseDispatch({
+            type: 'SET_CART_FROM_SERVER',
+            payload: { items },
+          });
+          return;
+        }
+
+        const guestItems = loadGuestCartItems();
+        if (guestItems.length > 0) {
+          for (const item of guestItems) {
+            await addCartItem({
+              productId: item.productId,
+              quantity: item.quantity,
+            });
+          }
+          clearGuestCartItems();
+        }
+
         const apiCart = await getCart();
         if (!isMounted) {
           return;
@@ -69,7 +117,7 @@ export function CartProvider({ children }: CartProviderProps) {
           payload: { items },
         });
       } catch (error) {
-        console.error('Failed to load cart from API', error);
+        console.error('Failed to load cart', error);
         if (isMounted) {
           setError('Failed to load cart. Please try again.');
         }
@@ -85,7 +133,16 @@ export function CartProvider({ children }: CartProviderProps) {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    const wasAuthenticated = prevIsAuthenticated.current;
+    prevIsAuthenticated.current = isAuthenticated;
+
+    if (wasAuthenticated && !isAuthenticated) {
+      saveGuestCartItems(state.items);
+    }
+  }, [isAuthenticated, state.items]);
 
   useEffect(() => {
     if (lastAction === null) {
@@ -96,6 +153,14 @@ export function CartProvider({ children }: CartProviderProps) {
 
     const syncCart = async () => {
       try {
+        if (!isAuthenticated) {
+          saveGuestCartItems(state.items);
+          if (!isCancelled) {
+            setError(null);
+          }
+          return;
+        }
+
         switch (lastAction.type) {
           case 'ADD_TO_CART': {
             await addCartItem({
@@ -184,7 +249,7 @@ export function CartProvider({ children }: CartProviderProps) {
     return () => {
       isCancelled = true;
     };
-  }, [lastAction, state.items]);
+  }, [isAuthenticated, lastAction, state.items]);
 
   const value: CartContextValue = {
     state,

@@ -3,6 +3,7 @@ import type { CartItem, CartState, CartAction } from '../types/cart';
 export const initialCartState: CartState = {
   items: [],
   isOpen: false,
+  cartView: 'cart',
 };
 
 export function cartReducer(state: CartState, action: CartAction): CartState {
@@ -79,8 +80,16 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
       return {
         ...state,
         isOpen: !state.isOpen,
+        cartView: 'cart',
       };
     }
+
+		case 'SET_CART_VIEW': {
+			return {
+				...state,
+				cartView: action.payload.cartView,
+			};
+		}
 
 		case 'SET_CART_FROM_SERVER': {
 			return {
