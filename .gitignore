@@ -9,9 +9,18 @@ node_modules/
 frontend/dist/
 frontend/dist-ssr/
 
+# Playwright artifacts
+frontend/playwright-report/
+frontend/test-results/
+.playwright-mcp/
+
 # .NET build artifacts
 backend/**/bin/
 backend/**/obj/
+
+# Local databases
+backend/**/*.db
+backend/**/*.db-*
 
 # Logs
 *.log
