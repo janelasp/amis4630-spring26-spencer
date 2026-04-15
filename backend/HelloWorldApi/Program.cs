@@ -184,6 +184,43 @@ using (var scope = app.Services.CreateScope())
             await userManager.AddToRoleAsync(adminUser, userRoleName);
         }
 
+        // Seed a regular user (User role only) for dev/grading convenience.
+        const string userEmail = "user@buckeye.local";
+
+        var regularUser = await userManager.FindByEmailAsync(userEmail);
+        if (regularUser == null)
+        {
+            var userPassword = builder.Configuration["Seed:UserPassword"];
+            if (string.IsNullOrWhiteSpace(userPassword))
+            {
+                userPassword = "User1234";
+            }
+
+            regularUser = new ApplicationUser
+            {
+                UserName = userEmail,
+                Email = userEmail,
+                EmailConfirmed = true
+            };
+
+            var createResult = await userManager.CreateAsync(regularUser, userPassword);
+            if (!createResult.Succeeded)
+            {
+                var errors = string.Join("; ", createResult.Errors.Select(e => e.Description));
+                throw new InvalidOperationException($"Failed to seed regular user: {errors}");
+            }
+        }
+
+        if (!await userManager.IsInRoleAsync(regularUser, userRoleName))
+        {
+            await userManager.AddToRoleAsync(regularUser, userRoleName);
+        }
+
+        if (await userManager.IsInRoleAsync(regularUser, adminRoleName))
+        {
+            await userManager.RemoveFromRoleAsync(regularUser, adminRoleName);
+        }
+
         if (!context.Products.Any())
         {
             context.Products.AddRange(

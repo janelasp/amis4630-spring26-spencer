@@ -55,9 +55,13 @@ export function OrdersPage() {
       {orders.length === 0 ? (
         <p>No orders yet.</p>
       ) : (
-        <ul className={styles.list} aria-label="Order list">
+        <ul className={styles.list} aria-label="Order list" data-testid="order-list">
           {orders.map((order) => (
-            <li key={order.id} className={styles.card}>
+            <li
+              key={order.id}
+              className={styles.card}
+              data-testid={`order-card-${order.id}`}
+            >
               <div className={styles.cardHeader}>
                 <span className={styles.orderId}>
                   {order.confirmationNumber || `Order #${order.id}`}
@@ -69,7 +73,11 @@ export function OrdersPage() {
                 <span>{order.status}</span>
                 <span>{order.items.length} items</span>
               </div>
-              <ul className={styles.items} aria-label={`Items for order ${order.id}`}>
+              <ul
+                className={styles.items}
+                aria-label={`Items for order ${order.id}`}
+                data-testid={`order-items-${order.id}`}
+              >
                 {order.items.map((item) => (
                   <li key={item.id} className={styles.itemRow}>
                     <span className={styles.itemName}>{item.productName}</span>

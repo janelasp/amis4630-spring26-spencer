@@ -1,4 +1,11 @@
-import { getAccessToken } from './tokenStorage';
+import type { AuthResponse } from '../types/auth';
+import { emitAuthLogout } from './authEvents';
+import {
+  clearStoredAuth,
+  getAccessToken,
+  loadStoredAuth,
+  saveStoredAuth,
+} from './tokenStorage';
 
 const DEFAULT_API_BASE_URL = 'http://localhost:5000/api';
 
@@ -29,6 +36,67 @@ export class ApiError extends Error {
 
 export interface ApiRequestOptions extends RequestInit {
   skipAuth?: boolean;
+}
+
+let refreshInFlight: Promise<boolean> | null = null;
+
+function isAuthResponse(value: unknown): value is AuthResponse {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  const record = value as Record<string, unknown>;
+  return (
+    typeof record.accessToken === 'string' &&
+    typeof record.refreshToken === 'string' &&
+    typeof record.expiresAtUtc === 'string'
+  );
+}
+
+async function tryRefreshAccessToken(): Promise<boolean> {
+  const stored = loadStoredAuth();
+  if (!stored?.refreshToken) {
+    return false;
+  }
+
+  if (refreshInFlight) {
+    return await refreshInFlight;
+  }
+
+  refreshInFlight = (async () => {
+    try {
+      const response = await fetch(buildUrl('/auth/refresh'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ refreshToken: stored.refreshToken }),
+      });
+
+      if (!response.ok) {
+        return false;
+      }
+
+      const data = (await response.json()) as unknown;
+      if (!isAuthResponse(data)) {
+        return false;
+      }
+
+      saveStoredAuth({
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+        expiresAtUtc: data.expiresAtUtc,
+      });
+
+      return true;
+    } catch {
+      return false;
+    } finally {
+      refreshInFlight = null;
+    }
+  })();
+
+  return await refreshInFlight;
 }
 
 async function parseErrorMessage(response: Response): Promise<string> {
@@ -63,26 +131,54 @@ export async function apiRequest(
 ): Promise<Response> {
   const url = buildUrl(path);
 
-  const headers = new Headers(options.headers);
+  const buildHeaders = (): Headers => {
+    const headers = new Headers(options.headers);
 
-  if (!options.skipAuth) {
-    const token = getAccessToken();
-    if (token) {
-      headers.set('Authorization', `Bearer ${token}`);
+    if (!options.skipAuth) {
+      const token = getAccessToken();
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+    }
+
+    const hasBody = typeof options.body !== 'undefined' && options.body !== null;
+    const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData;
+
+    if (hasBody && !isFormData && !headers.has('Content-Type')) {
+      headers.set('Content-Type', 'application/json');
+    }
+
+    return headers;
+  };
+
+  const makeRequest = async (): Promise<Response> => {
+    const headers = buildHeaders();
+    return await fetch(url, {
+      ...options,
+      headers,
+    });
+  };
+
+  let response = await makeRequest();
+
+  // Centralized auth handling: refresh + retry once on 401/403.
+  if (
+    !response.ok &&
+    !options.skipAuth &&
+    (response.status === 401 || response.status === 403) &&
+    // Avoid infinite loops on the refresh endpoint.
+    !path.startsWith('/auth/refresh')
+  ) {
+    const refreshed = await tryRefreshAccessToken();
+    if (refreshed) {
+      response = await makeRequest();
+    }
+
+    if (!response.ok && (response.status === 401 || response.status === 403)) {
+      clearStoredAuth();
+      emitAuthLogout();
     }
   }
-
-  const hasBody = typeof options.body !== 'undefined' && options.body !== null;
-  const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData;
-
-  if (hasBody && !isFormData && !headers.has('Content-Type')) {
-    headers.set('Content-Type', 'application/json');
-  }
-
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
 
   if (!response.ok) {
     const message = await parseErrorMessage(response);

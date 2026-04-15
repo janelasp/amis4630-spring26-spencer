@@ -10,6 +10,7 @@ import type { AuthState, StoredAuth } from '../types/auth';
 import { authReducer, initialAuthState } from '../reducers/authReducer';
 import * as authService from '../services/authService';
 import { getJwtRoles, tokenHasRole } from '../services/jwt';
+import { AUTH_LOGOUT_EVENT } from '../services/authEvents';
 import {
   clearStoredAuth,
   loadStoredAuth,
@@ -49,8 +50,63 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [state, dispatch] = useReducer(authReducer, initialAuthState);
 
   useEffect(() => {
-    const stored = loadStoredAuth();
-    dispatch({ type: 'RESTORE_AUTH', payload: { auth: stored } });
+    let isMounted = true;
+
+    const isExpiredOrInvalid = (expiresAtUtc: string): boolean => {
+      const expiresAtMs = Date.parse(expiresAtUtc);
+      if (Number.isNaN(expiresAtMs)) {
+        return true;
+      }
+
+      // Small clock-skew buffer to avoid edge-of-expiry 401s.
+      const skewMs = 30_000;
+      return expiresAtMs - skewMs <= Date.now();
+    };
+
+    const restore = async () => {
+      const stored = loadStoredAuth();
+      if (!stored) {
+        dispatch({ type: 'RESTORE_AUTH', payload: { auth: null } });
+        return;
+      }
+
+      if (!isExpiredOrInvalid(stored.expiresAtUtc)) {
+        dispatch({ type: 'RESTORE_AUTH', payload: { auth: stored } });
+        return;
+      }
+
+      try {
+        const refreshed = await authService.refresh(stored.refreshToken);
+        const nextStored = toStoredAuth(refreshed);
+        saveStoredAuth(nextStored);
+        if (isMounted) {
+          dispatch({ type: 'RESTORE_AUTH', payload: { auth: nextStored } });
+        }
+      } catch {
+        clearStoredAuth();
+        if (isMounted) {
+          dispatch({ type: 'RESTORE_AUTH', payload: { auth: null } });
+        }
+      }
+    };
+
+    void restore();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleLogout = () => {
+      clearStoredAuth();
+      dispatch({ type: 'LOGOUT' });
+    };
+
+    window.addEventListener(AUTH_LOGOUT_EVENT, handleLogout);
+    return () => {
+      window.removeEventListener(AUTH_LOGOUT_EVENT, handleLogout);
+    };
   }, []);
 
   const login = async (email: string, password: string) => {

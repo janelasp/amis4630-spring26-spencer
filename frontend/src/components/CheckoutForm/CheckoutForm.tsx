@@ -3,21 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useCartContext } from '../../contexts/CartContext';
 import { ApiError } from '../../services/apiClient';
 import { createOrderFromCart } from '../../services/orderService';
+import {
+  CHECKOUT_FIELD_NAMES,
+  type CheckoutFormData,
+  type CheckoutFormErrors,
+  validateCheckoutField,
+  validateCheckoutForm,
+} from './checkoutValidation';
 import styles from './CheckoutForm.module.css';
-
-interface CheckoutFormData {
-  shippingAddress: string;
-  city: string;
-  state: string;
-  zipCode: string;
-}
-
-interface CheckoutFormErrors {
-  shippingAddress?: string;
-  city?: string;
-  state?: string;
-  zipCode?: string;
-}
 
 const INITIAL_FORM_DATA: CheckoutFormData = {
   shippingAddress: '',
@@ -25,13 +18,6 @@ const INITIAL_FORM_DATA: CheckoutFormData = {
   state: '',
   zipCode: '',
 };
-
-const FIELD_NAMES: Array<keyof CheckoutFormData> = [
-  'shippingAddress',
-  'city',
-  'state',
-  'zipCode',
-];
 
 const US_STATES = ['OH', 'CA', 'NY', 'TX', 'FL'];
 
@@ -44,54 +30,6 @@ export function CheckoutForm() {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const validateField = (
-    fieldName: keyof CheckoutFormData,
-    value: string,
-  ): string | undefined => {
-    const trimmedValue = value.trim();
-
-    switch (fieldName) {
-      case 'shippingAddress':
-        if (trimmedValue.length === 0) {
-          return 'Shipping address is required.';
-        }
-        if (trimmedValue.length < 5) {
-          return 'Shipping address must be at least 5 characters.';
-        }
-        return undefined;
-      case 'city':
-        if (trimmedValue.length === 0) {
-          return 'City is required.';
-        }
-        return undefined;
-      case 'state':
-        if (trimmedValue.length === 0) {
-          return 'State is required.';
-        }
-        return undefined;
-      case 'zipCode':
-        if (trimmedValue.length === 0) {
-          return 'Zip code is required.';
-        }
-        if (!/^\d{5}$/.test(trimmedValue)) {
-          return 'Zip code must be 5 digits.';
-        }
-        return undefined;
-    }
-  };
-
-  const validateAllFields = (data: CheckoutFormData): CheckoutFormErrors => {
-    const nextErrors: CheckoutFormErrors = {};
-
-    FIELD_NAMES.forEach((fieldName) => {
-      const fieldError = validateField(fieldName, data[fieldName]);
-      if (fieldError) {
-        nextErrors[fieldName] = fieldError;
-      }
-    });
-
-    return nextErrors;
-  };
 
   const handleInputChange = (
     event: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -118,7 +56,7 @@ export function CheckoutForm() {
       return next;
     });
 
-    const fieldError = validateField(key, value);
+    const fieldError = validateCheckoutField(key, value);
     setErrors((prev) => ({
       ...prev,
       [key]: fieldError,
@@ -135,12 +73,12 @@ export function CheckoutForm() {
       return;
     }
 
-    const nextErrors = validateAllFields(formData);
+    const nextErrors = validateCheckoutForm(formData);
     const hasErrors = Object.keys(nextErrors).length > 0;
 
     if (hasErrors) {
       setErrors(nextErrors);
-      setTouchedFields(new Set(FIELD_NAMES));
+      setTouchedFields(new Set(CHECKOUT_FIELD_NAMES));
       return;
     }
 

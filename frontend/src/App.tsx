@@ -8,6 +8,7 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
+import { useEffect } from 'react';
 import { ProductList } from './components/ProductList';
 import { ProductDetail } from './components/ProductDetail';
 import { CartProvider, useCartContext } from './contexts/CartContext';
@@ -23,6 +24,7 @@ import { RequireAuth } from './components/RequireAuth/RequireAuth';
 import { RequireRole } from './components/RequireRole/RequireRole';
 import { AuthStatus } from './components/AuthStatus/AuthStatus';
 import { AdminDashboard } from './components/AdminDashboard/AdminDashboard';
+import { AUTH_LOGOUT_EVENT } from './services/authEvents';
 import './App.css';
 
 function ProductListRoute() {
@@ -66,6 +68,20 @@ function CheckoutRoute() {
 function AppLayout() {
   const navigate = useNavigate();
   const { state, dispatch } = useCartContext();
+
+  useEffect(() => {
+    const handleLogout = () => {
+      if (state.isOpen) {
+        dispatch({ type: 'TOGGLE_CART' });
+      }
+      navigate('/login', { replace: true });
+    };
+
+    window.addEventListener(AUTH_LOGOUT_EVENT, handleLogout);
+    return () => {
+      window.removeEventListener(AUTH_LOGOUT_EVENT, handleLogout);
+    };
+  }, [dispatch, navigate, state.isOpen]);
 
   const handleBrowseProducts = () => {
     if (state.isOpen) {
