@@ -11,7 +11,7 @@ I used AI to check if I met the requirements for the Milestone's deliverables. I
 
 
 ## Authentication, Security & Testing Development
-I used AI to create the testing and security agents as well generate tests for the frontend and backend. It was also used to help with implementing user authentication with JWT, protection of API endpoints as well as building the checkout/order flow. Copilot was also used to correct errors with a minimal fix. It was also prompted to not generate exhaustive lines of code and lose its track.
+I used AI to create the testing and security agents as well generate tests for the frontend and backend. It was also used to help with implementing user authentication with JWT, protection of API endpoints as well as building the checkout/order flow. Copilot was also used to correct errors with a minimal fix. It was also prompted to not generate exhaustive lines of code and lose its track. During the E2E run, there were 2 console errors so I stopped the run to explain the errors and suggest the minimal fix then I resumed the run.
 
 
 

@@ -12,7 +12,7 @@ These accounts are seeded automatically when the backend runs in **Development**
   - Email: admin@buckeye.local
   - Password: Admin1234
 
-## Security Practices Applied (3+)
+## Security Practices Applied
 
 1) **Secrets not committed (JWT signing key via user secrets)**
    - The JWT signing key is intentionally not stored in config files checked into git; the API requires `Jwt:Key` to be supplied via user secrets/environment config.

@@ -2,7 +2,7 @@
 
 ## Prompts used
 
-1. Initial prompt (happy path run)
+1. Initial prompt
 
 - Register or log in with a valid user.
 - Browse products.
@@ -48,11 +48,4 @@
 - Updated the Playwright spec to use `getByTestId` (and the created order id from the confirmation URL) instead of ambiguous `getByText` selectors.
   - Test file: [frontend/e2e/checkout-order-history.spec.ts](../frontend/e2e/checkout-order-history.spec.ts)
 
-## Files to commit / where to find them
 
-- Playwright spec (happy path): [frontend/e2e/checkout-order-history.spec.ts](../frontend/e2e/checkout-order-history.spec.ts)
-- Playwright config: [frontend/playwright.config.ts](../frontend/playwright.config.ts)
-
-## How to re-run
-
-From the frontend folder, run npx playwright test.
