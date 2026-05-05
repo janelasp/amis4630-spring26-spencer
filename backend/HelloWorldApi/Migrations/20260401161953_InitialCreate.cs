@@ -39,7 +39,7 @@ namespace HelloWorldApi.Migrations
                     Price = table.Column<decimal>(type: "decimal(12,2)", nullable: false),
                     Category = table.Column<string>(type: "TEXT", nullable: false),
                     sellerName = table.Column<string>(type: "TEXT", nullable: false),
-                    postedDate = table.Column<DateOnly>(type: "TEXT", nullable: false),
+                    postedDate = table.Column<DateOnly>(type: "date", nullable: false),
                     ImageUrl = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -79,14 +79,14 @@ namespace HelloWorldApi.Migrations
                 columns: new[] { "Id", "Category", "Description", "ImageUrl", "Price", "Title", "postedDate", "sellerName" },
                 values: new object[,]
                 {
-                    { 1, "Textbooks", "A comprehensive textbook covering all aspects of organic chemistry, including reaction mechanisms, synthesis, and spectroscopy.", "https://example.com/images/organic-chemistry-textbook.jpg", 19.99m, "Organic Chemistry Textbook", new DateOnly(2026, 4, 1), "Audrey Smith" },
-                    { 2, "Clothing", "Official Ohio State University game day jersey featuring the school's colors and logo.", "https://example.com/images/osu-game-day-jersey.jpg", 14.99m, "OSU Game Day Jersey", new DateOnly(2026, 4, 1), "Brian Johnson" },
-                    { 3, "Stationery", "A set of 10 mechanical pencils with different lead thicknesses, perfect for students and professionals.", "https://example.com/images/mechanical-pencil-set.jpg", 9.99m, "Mechanical Pencil Set", new DateOnly(2026, 4, 1), "Catherine Lee" },
-                    { 4, "Dorm Decor", "A bright and energy-efficient desktop lamp with adjustable brightness.", "https://example.com/images/desktop-lamp.jpg", 29.99m, "Desktop Lamp", new DateOnly(2026, 4, 1), "Alyssa Powell" },
-                    { 5, "Dorm Decor", "A set of 10 LED light strips with adjustable brightness and color options.", "https://example.com/images/led-light-strip.jpg", 39.99m, "LED Light Strip", new DateOnly(2026, 4, 1), "David Martinez" },
-                    { 6, "Stationery", "A set of 12 highlighters in various colors for marking important text.", "https://example.com/images/highlighter-set.jpg", 12.99m, "Highlighter Set", new DateOnly(2026, 4, 1), "Emily Davis" },
-                    { 7, "Clothing", "A comfortable Ohio State University hoodie featuring the school's logo and colors.", "https://example.com/images/osu-hoodie.jpg", 34.99m, "OSU Hoodie", new DateOnly(2026, 4, 1), "Michael Brown" },
-                    { 8, "Textbooks", "A comprehensive textbook covering advanced calculus topics for students in Calculus II.", "https://example.com/images/calculus-ii-textbook.jpg", 35.00m, "Calculus II Textbook", new DateOnly(2026, 4, 1), "Sarah Wilson" }
+                    { 1, "Textbooks", "A comprehensive textbook covering all aspects of organic chemistry, including reaction mechanisms, synthesis, and spectroscopy.", "https://example.com/images/organic-chemistry-textbook.jpg", 19.99m, "Organic Chemistry Textbook", "2026-04-01", "Audrey Smith" },
+                    { 2, "Clothing", "Official Ohio State University game day jersey featuring the school's colors and logo.", "https://example.com/images/osu-game-day-jersey.jpg", 14.99m, "OSU Game Day Jersey", "2026-04-01", "Brian Johnson" },
+                    { 3, "Stationery", "A set of 10 mechanical pencils with different lead thicknesses, perfect for students and professionals.", "https://example.com/images/mechanical-pencil-set.jpg", 9.99m, "Mechanical Pencil Set", "2026-04-01", "Catherine Lee" },
+                    { 4, "Dorm Decor", "A bright and energy-efficient desktop lamp with adjustable brightness.", "https://example.com/images/desktop-lamp.jpg", 29.99m, "Desktop Lamp", "2026-04-01", "Alyssa Powell" },
+                    { 5, "Dorm Decor", "A set of 10 LED light strips with adjustable brightness and color options.", "https://example.com/images/led-light-strip.jpg", 39.99m, "LED Light Strip", "2026-04-01", "David Martinez" },
+                    { 6, "Stationery", "A set of 12 highlighters in various colors for marking important text.", "https://example.com/images/highlighter-set.jpg", 12.99m, "Highlighter Set", "2026-04-01", "Emily Davis" },
+                    { 7, "Clothing", "A comfortable Ohio State University hoodie featuring the school's logo and colors.", "https://example.com/images/osu-hoodie.jpg", 34.99m, "OSU Hoodie", "2026-04-01", "Michael Brown" },
+                    { 8, "Textbooks", "A comprehensive textbook covering advanced calculus topics for students in Calculus II.", "https://example.com/images/calculus-ii-textbook.jpg", 35.00m, "Calculus II Textbook", "2026-04-01", "Sarah Wilson" }
                 });
 
             migrationBuilder.CreateIndex(

@@ -31,7 +31,7 @@ Buckeye Marketplace is a full-stack e-commerce application built with:
 - Product catalog: working (displays from API)
 - Product detail: working
 - Shopping cart: working (M4)
-- Authentication: in progress (M5)
+- Authentication: working (M5)
 
 ## When Generating Code
 - Always include TypeScript types

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { Product } from '../types/product';
+import { getAllProducts } from '../services/productService';
 import { ProductCard } from './ProductCard';
 
 interface ProductListProps {
@@ -12,16 +13,32 @@ export function ProductList({ onProductClick }: ProductListProps) {
     const [error, setError] = useState<string | null>(null);
     
     useEffect(() => {
-        fetch('http://localhost:5000/api/products')
-            .then((response) => response.json())
-            .then((data) => {
-                setProducts(data);
-                setLoading(false);
-            })
-            .catch(() => {
-                setError('Failed to load products. Please try again.');
-                setLoading(false);
-            });
+        let isMounted = true;
+
+        const loadProducts = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const data = await getAllProducts();
+                if (isMounted) {
+                    setProducts(data);
+                }
+            } catch {
+                if (isMounted) {
+                    setError('Failed to load products. Please try again.');
+                }
+            } finally {
+                if (isMounted) {
+                    setLoading(false);
+                }
+            }
+        };
+
+        void loadProducts();
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     if (loading) return <div>Loading products...</div>;

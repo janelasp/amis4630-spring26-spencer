@@ -168,12 +168,20 @@ public class OrdersController : ControllerBase
 
         _db.Orders.Add(order);
 
-        // Clear cart after ordering
-        _db.CartItems.RemoveRange(cart.Items);
-        cart.Items.Clear();
-        cart.UpdatedAt = nowUtc;
-
+        // Save the order first. Cart clearing happens best-effort to avoid
+        // DbUpdateConcurrencyException if the cart is modified concurrently.
         await _db.SaveChangesAsync();
+
+        try
+        {
+            _db.CartItems.RemoveRange(cart.Items);
+            cart.UpdatedAt = nowUtc;
+            await _db.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            // If cart items were already cleared by another request, don't fail the order.
+        }
 
         // Reload with Product for response
         var created = await _db.Orders

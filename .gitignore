@@ -24,3 +24,10 @@ backend/**/*.db-*
 
 # Logs
 *.log
+
+# App settings (development)
+**/appsettings.Development.json
+
+# User secrets (defensive ignore in repo)
+**/secrets.json
+**/usersecrets.json

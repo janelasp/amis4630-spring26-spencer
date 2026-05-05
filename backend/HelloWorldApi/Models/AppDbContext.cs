@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HelloWorldApi.Models;
 
@@ -19,6 +20,14 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Order>()
+            .Property(o => o.Total)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<OrderItem>()
+            .Property(oi => oi.UnitPrice)
+            .HasPrecision(18, 2);
 
         modelBuilder.Entity<RefreshToken>()
             .HasOne(rt => rt.User)
@@ -50,6 +59,10 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             .WithMany()
             .HasForeignKey(ci => ci.ProductId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Product>()
+            .Property(p => p.postedDate)
+            .HasColumnType("date");
 
         // Seed product data (moved from ProductsController)
         modelBuilder.Entity<Product>().HasData(

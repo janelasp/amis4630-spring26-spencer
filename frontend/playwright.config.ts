@@ -16,24 +16,48 @@ export default defineConfig({
   },
   webServer: [
     {
-      command: 'dotnet run --project ./backend/HelloWorldApi/HelloWorldApi.csproj',
-      url: 'http://localhost:5000/api/hello',
-      reuseExistingServer: true,
+      command: 'dotnet run --project ./backend/HelloWorldApi/HelloWorldApi.csproj --no-launch-profile --urls http://localhost:5001',
+      url: 'http://localhost:5001/api/hello',
+      reuseExistingServer: false,
       timeout: 120_000,
       cwd: '..',
+      env: {
+        ASPNETCORE_ENVIRONMENT: 'Development',
+        DOTNET_ENVIRONMENT: 'Development',
+        Jwt__Key: 'THIS_IS_A_DEV_KEY_32+_CHARS_LONG_1234567890',
+      },
     },
     {
-      command: 'npm run dev -- --host 127.0.0.1 --port 5173',
+      command: 'npm run dev -- --host localhost --port 5173',
       url: 'http://localhost:5173',
-      reuseExistingServer: true,
+      reuseExistingServer: false,
       timeout: 120_000,
       cwd: '.',
+      env: {
+        VITE_API_BASE_URL: 'http://localhost:5001/api',
+      },
     },
   ],
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
+    {
+      name: 'mobile-chrome',
+      use: { ...devices['Pixel 5'] },
+    },
+    {
+      name: 'mobile-safari',
+      use: { ...devices['iPhone 13'] },
     },
   ],
 });

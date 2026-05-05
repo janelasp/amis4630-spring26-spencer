@@ -162,3 +162,31 @@
 .checkoutButton:hover {
   background-color: #990a26;
 }
+
+@media (max-width: 600px) {
+  .cartPage {
+    padding: 1.25rem;
+  }
+
+  .cartItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .itemControls {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .summary {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .checkoutButton {
+    width: 100%;
+  }
+}

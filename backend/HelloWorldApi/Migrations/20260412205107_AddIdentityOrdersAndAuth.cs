@@ -233,56 +233,56 @@ namespace HelloWorldApi.Migrations
                 keyColumn: "Id",
                 keyValue: 1,
                 column: "postedDate",
-                value: new DateOnly(2026, 4, 12));
+                value: "2026-04-12");
 
             migrationBuilder.UpdateData(
                 table: "Products",
                 keyColumn: "Id",
                 keyValue: 2,
                 column: "postedDate",
-                value: new DateOnly(2026, 4, 12));
+                value: "2026-04-12");
 
             migrationBuilder.UpdateData(
                 table: "Products",
                 keyColumn: "Id",
                 keyValue: 3,
                 column: "postedDate",
-                value: new DateOnly(2026, 4, 12));
+                value: "2026-04-12");
 
             migrationBuilder.UpdateData(
                 table: "Products",
                 keyColumn: "Id",
                 keyValue: 4,
                 column: "postedDate",
-                value: new DateOnly(2026, 4, 12));
+                value: "2026-04-12");
 
             migrationBuilder.UpdateData(
                 table: "Products",
                 keyColumn: "Id",
                 keyValue: 5,
                 column: "postedDate",
-                value: new DateOnly(2026, 4, 12));
+                value: "2026-04-12");
 
             migrationBuilder.UpdateData(
                 table: "Products",
                 keyColumn: "Id",
                 keyValue: 6,
                 column: "postedDate",
-                value: new DateOnly(2026, 4, 12));
+                value: "2026-04-12");
 
             migrationBuilder.UpdateData(
                 table: "Products",
                 keyColumn: "Id",
                 keyValue: 7,
                 column: "postedDate",
-                value: new DateOnly(2026, 4, 12));
+                value: "2026-04-12");
 
             migrationBuilder.UpdateData(
                 table: "Products",
                 keyColumn: "Id",
                 keyValue: 8,
                 column: "postedDate",
-                value: new DateOnly(2026, 4, 12));
+                value: "2026-04-12");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -380,56 +380,56 @@ namespace HelloWorldApi.Migrations
                 keyColumn: "Id",
                 keyValue: 1,
                 column: "postedDate",
-                value: new DateOnly(2026, 4, 1));
+                value: "2026-04-01");
 
             migrationBuilder.UpdateData(
                 table: "Products",
                 keyColumn: "Id",
                 keyValue: 2,
                 column: "postedDate",
-                value: new DateOnly(2026, 4, 1));
+                value: "2026-04-01");
 
             migrationBuilder.UpdateData(
                 table: "Products",
                 keyColumn: "Id",
                 keyValue: 3,
                 column: "postedDate",
-                value: new DateOnly(2026, 4, 1));
+                value: "2026-04-01");
 
             migrationBuilder.UpdateData(
                 table: "Products",
                 keyColumn: "Id",
                 keyValue: 4,
                 column: "postedDate",
-                value: new DateOnly(2026, 4, 1));
+                value: "2026-04-01");
 
             migrationBuilder.UpdateData(
                 table: "Products",
                 keyColumn: "Id",
                 keyValue: 5,
                 column: "postedDate",
-                value: new DateOnly(2026, 4, 1));
+                value: "2026-04-01");
 
             migrationBuilder.UpdateData(
                 table: "Products",
                 keyColumn: "Id",
                 keyValue: 6,
                 column: "postedDate",
-                value: new DateOnly(2026, 4, 1));
+                value: "2026-04-01");
 
             migrationBuilder.UpdateData(
                 table: "Products",
                 keyColumn: "Id",
                 keyValue: 7,
                 column: "postedDate",
-                value: new DateOnly(2026, 4, 1));
+                value: "2026-04-01");
 
             migrationBuilder.UpdateData(
                 table: "Products",
                 keyColumn: "Id",
                 keyValue: 8,
                 column: "postedDate",
-                value: new DateOnly(2026, 4, 1));
+                value: "2026-04-01");
         }
     }
 }

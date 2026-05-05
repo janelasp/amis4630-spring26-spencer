@@ -106,13 +106,34 @@ async function parseErrorMessage(response: Response): Promise<string> {
       const body = (await response.json()) as unknown;
       if (typeof body === 'object' && body !== null) {
         const record = body as Record<string, unknown>;
-        if (typeof record.Message === 'string') {
-          return record.Message;
+        const message =
+          (typeof record.Message === 'string' && record.Message) ||
+          (typeof record.message === 'string' && record.message);
+        if (message) {
+          return message;
         }
         if (Array.isArray(record.Errors)) {
           const errors = record.Errors.filter((e): e is string => typeof e === 'string');
           if (errors.length > 0) {
             return errors.join('\n');
+          }
+        }
+
+        // ASP.NET Core ValidationProblemDetails: { errors: { Field: ["msg", ...] } }
+        if (typeof record.errors === 'object' && record.errors !== null) {
+          const errorsRecord = record.errors as Record<string, unknown>;
+          const messages: string[] = [];
+          for (const value of Object.values(errorsRecord)) {
+            if (Array.isArray(value)) {
+              for (const entry of value) {
+                if (typeof entry === 'string') {
+                  messages.push(entry);
+                }
+              }
+            }
+          }
+          if (messages.length > 0) {
+            return messages.join('\n');
           }
         }
       }

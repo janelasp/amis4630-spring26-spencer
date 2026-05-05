@@ -27,7 +27,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact",
-        policy => policy.WithOrigins("http://localhost:5173")
+        policy => policy.WithOrigins("http://localhost:5173",
+                        builder.Configuration["Cors:AllowedOrigin"] ?? "")
                         .AllowAnyHeader()
                         .AllowAnyMethod());
 });
@@ -38,9 +39,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     {
         options.UseInMemoryDatabase("HelloWorldApi_Testing");
     }
+    else if (builder.Environment.IsDevelopment()
+             && !string.Equals(builder.Configuration["UseSqlServer"], "true", StringComparison.OrdinalIgnoreCase))
+    {
+        options.UseInMemoryDatabase("HelloWorldApi_Development");
+    }
     else
     {
-        options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
     }
 });
 
@@ -140,6 +146,48 @@ using (var scope = app.Services.CreateScope())
         const string userRoleName = "User";
         const string adminEmail = "admin@buckeye.local";
 
+        static async Task<ApplicationUser> EnsureUserExists(
+            UserManager<ApplicationUser> userManager,
+            string email,
+            string password)
+        {
+            var existing = await userManager.FindByEmailAsync(email);
+            if (existing != null)
+            {
+                return existing;
+            }
+
+            var newUser = new ApplicationUser
+            {
+                UserName = email,
+                Email = email,
+                EmailConfirmed = true
+            };
+
+            var createResult = await userManager.CreateAsync(newUser, password);
+            if (!createResult.Succeeded)
+            {
+                var errors = string.Join("; ", createResult.Errors.Select(e => e.Description));
+                throw new InvalidOperationException($"Failed to seed user {email}: {errors}");
+            }
+
+            return newUser;
+        }
+
+        static async Task EnsureRoles(
+            UserManager<ApplicationUser> userManager,
+            ApplicationUser user,
+            params string[] roles)
+        {
+            foreach (var role in roles)
+            {
+                if (!await userManager.IsInRoleAsync(user, role))
+                {
+                    await userManager.AddToRoleAsync(user, role);
+                }
+            }
+        }
+
         if (!await roleManager.RoleExistsAsync(adminRoleName))
         {
             await roleManager.CreateAsync(new IdentityRole(adminRoleName));
@@ -150,38 +198,30 @@ using (var scope = app.Services.CreateScope())
             await roleManager.CreateAsync(new IdentityRole(userRoleName));
         }
 
-        var adminUser = await userManager.FindByEmailAsync(adminEmail);
-        if (adminUser == null)
+        var adminPassword = builder.Configuration["Seed:AdminPassword"];
+        if (string.IsNullOrWhiteSpace(adminPassword))
         {
-            var adminPassword = builder.Configuration["Seed:AdminPassword"];
-            if (string.IsNullOrWhiteSpace(adminPassword))
-            {
-                adminPassword = "Admin1234";
-            }
-
-            adminUser = new ApplicationUser
-            {
-                UserName = adminEmail,
-                Email = adminEmail,
-                EmailConfirmed = true
-            };
-
-            var createResult = await userManager.CreateAsync(adminUser, adminPassword);
-            if (!createResult.Succeeded)
-            {
-                var errors = string.Join("; ", createResult.Errors.Select(e => e.Description));
-                throw new InvalidOperationException($"Failed to seed admin user: {errors}");
-            }
+            adminPassword = "Admin1234";
         }
 
-        if (!await userManager.IsInRoleAsync(adminUser, adminRoleName))
-        {
-            await userManager.AddToRoleAsync(adminUser, adminRoleName);
-        }
+        var adminUser = await EnsureUserExists(userManager, adminEmail, adminPassword);
+        await EnsureRoles(userManager, adminUser, adminRoleName, userRoleName);
 
-        if (!await userManager.IsInRoleAsync(adminUser, userRoleName))
+        // Additional admin users for parallel Playwright projects.
+        // Keeps tests from racing on a shared admin cart/session.
+        var projectAdminEmails = new[]
         {
-            await userManager.AddToRoleAsync(adminUser, userRoleName);
+            "admin+chromium@buckeye.local",
+            "admin+firefox@buckeye.local",
+            "admin+webkit@buckeye.local",
+            "admin+mobile-chrome@buckeye.local",
+            "admin+mobile-safari@buckeye.local",
+        };
+
+        foreach (var email in projectAdminEmails)
+        {
+            var user = await EnsureUserExists(userManager, email, adminPassword);
+            await EnsureRoles(userManager, user, adminRoleName, userRoleName);
         }
 
         // Seed a regular user (User role only) for dev/grading convenience.

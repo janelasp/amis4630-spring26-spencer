@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent, type FocusEvent, type FormEvent } from 'react';
+import { useRef, useState, type ChangeEvent, type FocusEvent, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCartContext } from '../../contexts/CartContext';
 import { ApiError } from '../../services/apiClient';
@@ -29,6 +29,7 @@ export function CheckoutForm() {
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const processingRef = useRef(false);
 
 
   const handleInputChange = (
@@ -66,10 +67,17 @@ export function CheckoutForm() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    if (processingRef.current) {
+      return;
+    }
+
+    processingRef.current = true;
+
     setSubmitError(null);
 
     if (cartItemCount === 0) {
       setSubmitError('Your cart is empty.');
+      processingRef.current = false;
       return;
     }
 
@@ -79,6 +87,7 @@ export function CheckoutForm() {
     if (hasErrors) {
       setErrors(nextErrors);
       setTouchedFields(new Set(CHECKOUT_FIELD_NAMES));
+      processingRef.current = false;
       return;
     }
 
@@ -105,6 +114,7 @@ export function CheckoutForm() {
       }
     } finally {
       setIsProcessing(false);
+      processingRef.current = false;
     }
   };
 
